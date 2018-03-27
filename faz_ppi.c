@@ -194,11 +194,11 @@ int faz_ppi(struct params_list *lista_parametros)
                      }
                   else
                      {
-                     for (j = 0; j < ny; j++)
+                     for (i = 0; i < nx; i++)
                         {
-                        for (i = 0; i < nx; i++)
+                        for (j = 0; j < ny; j++)
                            {
-                           bin_temp = ppi_ret->f(ppi_ret->data[j][i]);
+                           bin_temp = ppi_ret->f(ppi_ret->data[i][j]);
                            if (bin_temp > 150)
                               bin_temp = -99;
                            (void) fwrite((void *) &bin_temp, sizeof(float), 1, fp);

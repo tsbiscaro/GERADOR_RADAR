@@ -185,11 +185,11 @@ int faz_cappi(struct params_list *lista_parametros)
                }
             else
                {
-               for (j = 0; j < ny; j++)
+               for (i = 0; i < nx; i++)
                   {
-                  for (i = 0; i < nx; i++)
+                  for (j = 0; j < ny; j++)
                      {
-                     bin_temp = cappi->f(cappi->data[j][i]);
+                     bin_temp = cappi->f(cappi->data[i][j]);
                      if (bin_temp > 150)
                         bin_temp = -99;
                      (void) fwrite((void *) &bin_temp, sizeof(float), 1, fp);

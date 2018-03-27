@@ -205,9 +205,9 @@ int faz_echotop(struct params_list *lista_parametros)
                }
             else
                {
-               for (j = 0; j < ny; j++)
+               for (i = 0; i < nx; i++)
                   {
-                  for (i = 0; i < nx; i++)
+                  for (j = 0; j < ny; j++)
                      {
                      bin_temp = volume->h.f(saida[i + nx*j]);
                      if (bin_temp > 150)
