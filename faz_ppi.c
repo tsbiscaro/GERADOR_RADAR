@@ -17,9 +17,8 @@
 */
 #include "funcoes_auxiliares.h"
 
-int faz_ppi(struct params_list *lista_parametros)
+int faz_ppi(struct params_list *lista_parametros, Radar *radar)
    {
-   Radar *radar = NULL;
    Volume *volume = NULL;
    Sweep *sweep = NULL;
    Ray *ray = NULL;
@@ -56,17 +55,6 @@ int faz_ppi(struct params_list *lista_parametros)
    dy = ((float) lista_parametros->dy) / 1000;
    lista_parametros->produto = PROD_PPI;
    
-   for (arq = 0; (arq < MAX_FILES) &&
-           (lista_parametros->file_list[arq][0] != 0); arq++)
-      {
-      radar = RSL_anyformat_to_radar(lista_parametros->file_list[arq], NULL);
-      if (NULL == radar)
-         {
-         printf("Erro na abertura do arquivo %s\n",
-                lista_parametros->file_list[arq]);
-         /*Se deu erro no arquivo pula pro proximo*/
-         continue;
-         }
 
       monta_data(&radar->h, data_hora, sizeof(data_hora));
       
@@ -209,8 +197,6 @@ int faz_ppi(struct params_list *lista_parametros)
             RSL_free_carpi(ppi_ret);
             }
          }
-      RSL_free_radar(radar);
-      }
 
    return RSL_OK;
    

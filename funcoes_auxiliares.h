@@ -170,14 +170,14 @@ struct header_saida
    float d;
    };
 
-int faz_cappi(struct params_list *lista_parametros);
+int faz_cappi(struct params_list *lista_parametros, Radar *radar);
 int faz_echobase(struct params_list *lista_parametros);
-int faz_echotop(struct params_list *lista_parametros);
+int faz_echotop(struct params_list *lista_parametros, Radar *radar);
 int faz_hmax(struct params_list *lista_parametros);
 int faz_maxdisplay(struct params_list *lista_parametros);
-int faz_ppi(struct params_list *lista_parametros);
+int faz_ppi(struct params_list *lista_parametros, Radar *radar);
 int faz_rhi(struct params_list *lista_parametros);
-int faz_vil(struct params_list *lista_parametros);
+int faz_vil(struct params_list *lista_parametros, Radar *radar);
 int faz_rastreio(struct params_list *lista_parametros);
 int faz_cluster(struct params_list *lista_parametros);
 int faz_alerta(struct params_list *lista_parametros);

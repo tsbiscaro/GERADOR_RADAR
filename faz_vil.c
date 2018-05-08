@@ -18,9 +18,9 @@
 
 #include "funcoes_auxiliares.h"
 
-int faz_vil(struct params_list *lista_parametros)
+int faz_vil(struct params_list *lista_parametros,  Radar *radar)
    {
-   Radar *radar = NULL;
+  
    Volume *volume = NULL;
    Cube *cubo = NULL;
    
@@ -61,16 +61,6 @@ int faz_vil(struct params_list *lista_parametros)
       return RSL_ERR;
       }
 
-   for (arq = 0; (arq < MAX_FILES) &&
-           (lista_parametros->file_list[arq][0] != 0); arq++)
-      {
-      radar = RSL_anyformat_to_radar(lista_parametros->file_list[arq], NULL);
-      if (NULL == radar)
-         {
-         printf("Erro na abertura do arquivo %s\n", lista_parametros->file_list[arq]);
-         /*Se deu erro no arquivo pula pro proximo*/
-         continue;
-         }
 
       monta_data(&radar->h, data_hora, sizeof(data_hora));
       
@@ -199,8 +189,6 @@ int faz_vil(struct params_list *lista_parametros)
          
          RSL_free_cube(cubo);
          }
-      RSL_free_radar(radar);
-      }
    
    free((void *) saida);
    

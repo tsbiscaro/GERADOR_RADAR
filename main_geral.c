@@ -3,6 +3,7 @@
 
 int main(int argc, char *argv[])
    {
+   Radar *radar = NULL;
    int ii;
    Cube *cubo;
    FILE *fp;
@@ -15,10 +16,18 @@ int main(int argc, char *argv[])
       printf("Uso: %s <arquivo>\n", argv[0]);
       return -1;
       }
-   
    memset(&lista_parametros, 0, sizeof(struct params_list));
 
    strcpy(lista_parametros.file_list[0], argv[1]);
+
+   radar = RSL_anyformat_to_radar(lista_parametros.file_list[0], NULL);
+   if (NULL == radar)
+      {
+      printf("Erro na abertura do arquivo %s\n",
+             lista_parametros.file_list[0]);
+      return -1;
+      }
+   
    lista_parametros.nx = 500;
    lista_parametros.ny = 500;
    lista_parametros.nz = 18;
@@ -36,7 +45,7 @@ int main(int argc, char *argv[])
    
    strcpy(lista_parametros.sufixo, "cappi");
    lista_parametros.produto = PROD_CAPPI;
-   (void) faz_cappi(&lista_parametros);
+   (void) faz_cappi(&lista_parametros, radar);
    
    lista_parametros.nlevels = 3;
    lista_parametros.levels[0] = 20;
@@ -44,14 +53,14 @@ int main(int argc, char *argv[])
    lista_parametros.levels[2] = 45;
    strcpy(lista_parametros.sufixo, "echotop");
    lista_parametros.produto = PROD_TOP;
-   (void) faz_echotop(&lista_parametros);
+   (void) faz_echotop(&lista_parametros, radar);
    
    /*faz VIL entre 1000 e 16000 m*/
    lista_parametros.nlevels = 2;
    lista_parametros.levels[0] = 2000;
    lista_parametros.levels[1] = 16000;
    strcpy(lista_parametros.sufixo, "vil");
-   (void) faz_vil(&lista_parametros);
+   (void) faz_vil(&lista_parametros, radar);
       
    
    lista_parametros.nx = 666;
@@ -73,7 +82,11 @@ int main(int argc, char *argv[])
    
    lista_parametros.produto = PROD_PPI;
    strcpy(lista_parametros.sufixo, "ppi");
-   (void) faz_ppi(&lista_parametros);
+   (void) faz_ppi(&lista_parametros, radar);
+
+
+   RSL_free_radar(radar);
+
    
    return 0;
    }

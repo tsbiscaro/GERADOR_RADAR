@@ -17,9 +17,8 @@
 */
 #include "funcoes_auxiliares.h"
 
-int faz_cappi(struct params_list *lista_parametros)
+int faz_cappi(struct params_list *lista_parametros, Radar *radar)
    {
-   Radar *radar = NULL;
    Volume *volume = NULL;
    Carpi *cappi = NULL;
    float range = 1000;
@@ -54,153 +53,140 @@ int faz_cappi(struct params_list *lista_parametros)
    dx = ((float) lista_parametros->dx) / 1000;
    dy = ((float) lista_parametros->dy) / 1000;
    
-   for (arq = 0; (arq < MAX_FILES) &&
-           (lista_parametros->file_list[arq][0] != 0); arq++)
-      {
-      radar = RSL_anyformat_to_radar(lista_parametros->file_list[arq], NULL);
-      if (NULL == radar)
-         {
-         printf("Erro na abertura do arquivo %s\n",
-                lista_parametros->file_list[arq]);
-         /*Se deu erro no arquivo pula pro proximo*/
-         continue;
-         }
       
 /*      
       
-      fp = fopen("mascara.bin", "r");
-      fread((void *) in, 100*100*sizeof(short int), 1, fp);
-      fclose(fp);
+fp = fopen("mascara.bin", "r");
+fread((void *) in, 100*100*sizeof(short int), 1, fp);
+fclose(fp);
 
-      lat_radar = fabs(radar->h.latd) + (float) radar->h.latm/60 + (float) radar->h.lats/3600;
-      lon_radar = fabs(radar->h.lond) + (float) radar->h.lonm/60 + (float) radar->h.lons/3600;
+lat_radar = fabs(radar->h.latd) + (float) radar->h.latm/60 + (float) radar->h.lats/3600;
+lon_radar = fabs(radar->h.lond) + (float) radar->h.lonm/60 + (float) radar->h.lons/3600;
       
-      if (radar->h.latd < 0)
-         {
-         lat_radar = -lat_radar;
-         }
+if (radar->h.latd < 0)
+{
+lat_radar = -lat_radar;
+}
       
-      if (radar->h.lond < 0)
-         {
-         lon_radar = -lon_radar;
-         }
-      mask = interpola_mascara(in, 100, 100, 0.05, 0.05, -47, -21, lista_parametros, radar);
+if (radar->h.lond < 0)
+{
+lon_radar = -lon_radar;
+}
+mask = interpola_mascara(in, 100, 100, 0.05, 0.05, -47, -21, lista_parametros, radar);
 
-      fp = fopen("mascara_proc.bin", "w");
-      fwrite((void *) mask, 400*400*sizeof(char), 1, fp);
-      fclose(fp);
-      free(mask);
+fp = fopen("mascara_proc.bin", "w");
+fwrite((void *) mask, 400*400*sizeof(char), 1, fp);
+fclose(fp);
+free(mask);
       
-      return 0;
+return 0;
 */      
-      monta_data(&radar->h, data_hora, sizeof(data_hora));
+   monta_data(&radar->h, data_hora, sizeof(data_hora));
       
-      for (var = 0; var < lista_parametros->nvars; var++)
+   for (var = 0; var < lista_parametros->nvars; var++)
+      {
+      if (radar->v[lista_parametros->vars[var]] == NULL)
          {
-         if (radar->v[lista_parametros->vars[var]] == NULL)
-            {
-            printf("Variavel %s invalida\n",
-                   RSL_ftype[lista_parametros->vars[var]]);
-            /*Se nao encontrou a variavel pula pra proxima*/
-            continue;
-            }
+         printf("Variavel %s invalida\n",
+                RSL_ftype[lista_parametros->vars[var]]);
+         /*Se nao encontrou a variavel pula pra proxima*/
+         continue;
+         }
          
-         volume = radar->v[lista_parametros->vars[var]];
+      volume = radar->v[lista_parametros->vars[var]];
 //         RSL_load_refl_color_table();
 //         RSL_sweep_to_gif(volume->sweep[0], "testegif", 1000, 1000, 1000); 
          
 
-         /*corrige o beam_width caso necessario*/
-         corrige_param_radar(volume, lista_parametros);
-         (void) filtra_volume(volume, lista_parametros);
+      /*corrige o beam_width caso necessario*/
+      corrige_param_radar(volume, lista_parametros);
+      (void) filtra_volume(volume, lista_parametros);
          
-         for (lev = 0; lev < lista_parametros->nlevels; lev++)
+      for (lev = 0; lev < lista_parametros->nlevels; lev++)
+         {
+         /*
+         Verfica se o nivel pedido para o cappi esta
+         acima do radar
+         */
+         if (radar->h.height > lista_parametros->levels[lev])
             {
-            /*
-            Verfica se o nivel pedido para o cappi esta
-            acima do radar
-            */
-            if (radar->h.height > lista_parametros->levels[lev])
-               {
-               printf("Altura de cappi [%d (m)] invalida\n",
-                      lista_parametros->levels[lev]);
-               continue;
-               }
+            printf("Altura de cappi [%d (m)] invalida\n",
+                   lista_parametros->levels[lev]);
+            continue;
+            }
             
-            /*
-            Passa para o RSL o valor acima do radar, ja que o RSL
-            calcula o cappi considerando o radar com altura zero
-            */
-            h = ((float) (lista_parametros->levels[lev] -
-                          radar->h.height)) / 1000;
+         /*
+         Passa para o RSL o valor acima do radar, ja que o RSL
+         calcula o cappi considerando o radar com altura zero
+         */
+         h = ((float) (lista_parametros->levels[lev] -
+                       radar->h.height)) / 1000;
             
-            cappi = RSL_volume_to_carpi(volume, h, range,
-                                        dx, dy, nx, ny,
-                                        radar_x, radar_y, 0, 0);
+         cappi = RSL_volume_to_carpi(volume, h, range,
+                                     dx, dy, nx, ny,
+                                     radar_x, radar_y, 0, 0);
             
-            if (NULL == cappi)
-               {
-               /*Se deu erro no cappi pula pro proxima*/
-               printf("Cappi invalido\n");
-               continue;
-               }
-            preenche_cabecalho(&cabecalho, lista_parametros,
-                               radar, arq, var, lev);
+         if (NULL == cappi)
+            {
+            /*Se deu erro no cappi pula pro proxima*/
+            printf("Cappi invalido\n");
+            continue;
+            }
+         preenche_cabecalho(&cabecalho, lista_parametros,
+                            radar, arq, var, lev);
             
-            memset(arq_out, 0, MAX_FILENAME*sizeof(char));
+         memset(arq_out, 0, MAX_FILENAME*sizeof(char));
 
-            memset(data, 0, 8*sizeof(char));
-            memset(hora, 0, 4*sizeof(char));
-            memcpy(data, &lista_parametros->file_list[arq][8], 8);
-            memcpy(hora, &lista_parametros->file_list[arq][17], 4);
+         memset(data, 0, 8*sizeof(char));
+         memset(hora, 0, 4*sizeof(char));
+         memcpy(data, &lista_parametros->file_list[arq][8], 8);
+         memcpy(hora, &lista_parametros->file_list[arq][17], 4);
  
 
 
             
 #ifdef DATAHORA            
-            sprintf(arq_out, "%s_%s_%05d_%s.dat",
-                    lista_parametros->sufixo,
-                    RSL_ftype[lista_parametros->vars[var]],
-                    lista_parametros->levels[lev], data_hora);
+         sprintf(arq_out, "%s_%s_%05d_%s.dat",
+                 lista_parametros->sufixo,
+                 RSL_ftype[lista_parametros->vars[var]],
+                 lista_parametros->levels[lev], data_hora);
 /*
-            sprintf(arq_out, "%s_%s_%05d_%s_%s.dat",
-                    lista_parametros->sufixo,
-                    RSL_ftype[lista_parametros->vars[var]],
-                    lista_parametros->levels[lev], data, hora);
+sprintf(arq_out, "%s_%s_%05d_%s_%s.dat",
+lista_parametros->sufixo,
+RSL_ftype[lista_parametros->vars[var]],
+lista_parametros->levels[lev], data, hora);
 */
 #else
-            sprintf(arq_out, "%s_%s_%05d.dat",
-                    lista_parametros->sufixo,
-                    RSL_ftype[lista_parametros->vars[var]],
-                    lista_parametros->levels[lev]);
+         sprintf(arq_out, "%s_%s_%05d.dat",
+                 lista_parametros->sufixo,
+                 RSL_ftype[lista_parametros->vars[var]],
+                 lista_parametros->levels[lev]);
 #endif
-            /*
-            Grava o arquivo, comprime caso flag de compressao tenha sido marcado no cabecalho
-            No caso de ocorrer erro na compressao, grava sem comprimir
-            */
+         /*
+         Grava o arquivo, comprime caso flag de compressao tenha sido marcado no cabecalho
+         No caso de ocorrer erro na compressao, grava sem comprimir
+         */
             
-            if ((fp = fopen(arq_out, "w")) == NULL)
-               {
-               printf("Erro na abertura do arquivo %s de saida\n", arq_out);
-               }
-            else
-               {
-               for (i = 0; i < nx; i++)
-                  {
-                  for (j = 0; j < ny; j++)
-                     {
-                     bin_temp = cappi->f(cappi->data[i][j]);
-                     if (bin_temp > 150)
-                        bin_temp = -99;
-                     (void) fwrite((void *) &bin_temp, sizeof(float), 1, fp);
-                     }
-                  }
-               fclose(fp);
-               }
-            RSL_free_carpi(cappi);
+         if ((fp = fopen(arq_out, "w")) == NULL)
+            {
+            printf("Erro na abertura do arquivo %s de saida\n", arq_out);
             }
+         else
+            {
+            for (i = 0; i < nx; i++)
+               {
+               for (j = 0; j < ny; j++)
+                  {
+                  bin_temp = cappi->f(cappi->data[i][j]);
+                  if (bin_temp > 150)
+                     bin_temp = -99;
+                  (void) fwrite((void *) &bin_temp, sizeof(float), 1, fp);
+                  }
+               }
+            fclose(fp);
+            }
+         RSL_free_carpi(cappi);
          }
-      RSL_free_radar(radar);
       }
    
    return RSL_OK;
