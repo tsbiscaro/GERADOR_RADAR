@@ -94,7 +94,6 @@ int faz_echotop(struct params_list *lista_parametros)
          cubo = faz_cubo(volume, lista_parametros, radar->h.height);
          nz = lista_parametros->nz;
 
-         printf("FIZ CUBO\n");
 #if 0         
          memset(arq_out, 0, MAX_FILENAME*sizeof(char));
          strcpy(arq_out, "teste_cubo.dat");

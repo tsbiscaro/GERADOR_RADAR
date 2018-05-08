@@ -56,7 +56,9 @@ Cube *faz_cubo(Volume *volume, struct params_list *lista_parametros, float alt_r
    
    
    min_altura = (((int)((alt_radar - 1) / (dz*1000)) + 1) * (dz*1000));
-
+   max_altura = 20000;
+   
+   /*
    if (teto > 0)
       {
       max_altura = (((int)(teto / (dz*1000))) * dz*1000);
@@ -65,6 +67,7 @@ Cube *faz_cubo(Volume *volume, struct params_list *lista_parametros, float alt_r
       {
       max_altura = (((int)(acha_altura_cubo(volume) / (dz*1000))) * dz*1000);
       }
+   */
    
    /*atualiza o nz e a altura da base no cabecalho*/
    nz = 1 + (int) ((max_altura - min_altura) / (dz*1000));
