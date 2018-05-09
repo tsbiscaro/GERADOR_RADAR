@@ -125,12 +125,13 @@ int faz_vil(struct params_list *lista_parametros,  Radar *radar)
             {
             for (j=0; j < ny; j++)
                {
+               /*
                if (verifica_coluna(cubo, i, j, nz) == RSL_ERR)
                   {
-                  /*Toda a coluna esta fora do alcance do radar*/
                   saida[i + nx*j] = volume->h.invf(BADVAL);
                   continue;
                   }
+               */
                vil_temp = 0;
                for (k = ind_camada0; k < (ind_camada1 - 1); k++)
                   {

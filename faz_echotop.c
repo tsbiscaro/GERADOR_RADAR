@@ -133,13 +133,13 @@ int faz_echotop(struct params_list *lista_parametros, Radar *radar)
                {
                for (j=0; j < ny; j++)
                   {
+                  /*
                   if (verifica_coluna(cubo, i, j, nz) == RSL_ERR)
                      {
-                     /*Toda a coluna esta fora do alcance do radar*/
                      saida[i + nx*j] = volume->h.invf(BADVAL);
                      continue;
                      }
-                  
+                  */
                   saida[i + nx*j] = volume->h.invf(NOECHO);
                   for (k=(nz-1); k > 0; k--)
                      {
