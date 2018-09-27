@@ -235,6 +235,8 @@ char *interpola_mascara(short int *entrada,
                         float lon_radar, float lat_radar);
 
 void corrige_param_radar(Volume *v, struct params_list *params);
+int filtra_volume(Volume *volume, struct params_list *lista_parametros);
+
 /*
 Funcoes que necessitam de C++ - Nao utilizadas nesse projeto
 int RSL_radar_to_netcdf(Radar *radar, char *outfile);
