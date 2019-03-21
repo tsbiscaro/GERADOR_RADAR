@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
              lista_parametros.file_list[0]);
       return -1;
       }
-   
+   lista_parametros.beam_width = 2.0;
    lista_parametros.nx = 500;
    lista_parametros.ny = 500;
    lista_parametros.nz = 18;
